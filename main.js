@@ -21,14 +21,16 @@ const observeURLChanged = (location, listener) => {
   if (typeof MutationObserver !== "undefined") {
     var previousUrl = "";
     var observer =  new MutationObserver(() => {
-      seconds = 5;
-      setTimeout(function(){
-        if (location.href !== previousUrl) {
-          previousUrl = location.href;
-          listener(location);
-        }
-      }, seconds * 1000);
+      previousUrl = location.href;
     });
+    var intervalId = undefined;
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
+    intervalId = setInterval(() => {
+      console.log("kiteru?????");
+      listener(window.location);
+    }, 3000);
     observer.observe(document, {
       subtree: true,
       childList: true
@@ -65,7 +67,6 @@ function removeRelativeTweet(document) {
     if (element.innerText === "関連ツイート") {
       hasRelativeTweet = true;
     } else if (hasRelativeTweet) {
-      console.log("idx: ", idx);
       element.parentElement.parentElement.parentElement.parentElement.parentElement.style.display = 'none';
     }
   }
@@ -75,6 +76,9 @@ function removeRelativeTweet(document) {
 
 const main = () => {
   var location = getLocation();
+  if (isDetailPage(location)) {
+    removeRelativeTweet(document);
+  }
   observeURLChanged(location, (next) => {
     console.log(`URL changed to ${next.href}`);
     if (isDetailPage(next)) {
