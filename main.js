@@ -28,9 +28,8 @@ const observeURLChanged = (location, listener) => {
       clearInterval(intervalId);
     }
     intervalId = setInterval(() => {
-      console.log("kiteru?????");
       listener(window.location);
-    }, 3000);
+    }, 1000);
     observer.observe(document, {
       subtree: true,
       childList: true
