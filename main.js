@@ -17,6 +17,50 @@ const getLocation = (path) => {
   }
 }
 
+function nestedDOMElement(element, nestCount, nestElement) {
+  if (nestCount === 0) {
+    return element;
+  }
+  if (typeof nestElement === "undefined") {
+    nestElement = element;
+  }
+  nestElement.parentElement = element;
+  return nestedDOMElement(element, nestCount - 1, nestElement.parentElement);
+}
+
+class DummyDOMElement {
+  constructor(innerText) {
+    this.innerText = innerText;
+    this.style = {
+      display: true
+    };
+  }
+}
+
+class DummyDOM {
+  constructor(tweetTextSet) {
+    this.tweetTextSet = tweetTextSet;
+    this.tweetDomElements = this.tweetTextSet.map((label) => {
+      return nestedDOMElement(new DummyDOMElement(label), 6)
+    })
+  }
+  getElementsByClassName = (selector) => {
+    return this.tweetDomElements
+  }
+}
+
+const getDocument = () => {
+  if (typeof document !== "undefined") {
+    return document;
+  } else {
+    // get it to run in node
+    const dummyData = ["First tweet", "Second tweet", "関連ツイート", "Relative first tweet", "Relative second tweet"]
+    return new DummyDOM(dummyData);
+  }
+}
+
+// --- SOLVE ---
+
 const observeURLChanged = (location, listener) => {
   if (typeof MutationObserver !== "undefined") {
     var previousUrl = "";
@@ -28,7 +72,7 @@ const observeURLChanged = (location, listener) => {
       clearInterval(intervalId);
     }
     intervalId = setInterval(() => {
-      listener(window.location);
+      listener(location);
     }, 1000);
     observer.observe(document, {
       subtree: true,
@@ -42,8 +86,6 @@ const observeURLChanged = (location, listener) => {
   }
 }
 
-// --- SOLVE ---
-
 const isDetailPage = (location) => {
   var pathname = location.pathname;
   // TODO: Using regex pattern
@@ -51,12 +93,11 @@ const isDetailPage = (location) => {
   return pathcount > 2;
 }
 
-function removeRelativeTweet(document) {
-  // NOTE: class="css-901oao css-16my406 r-1tl8opc r-bcqeeo r-qvutc0"
+const removeRelativeTweet = (document) => {
+  // Using in related text tweet.
   const elements = document.getElementsByClassName("css-901oao css-16my406 r-1tl8opc r-bcqeeo r-qvutc0");
-  console.log(elements);
   if (!elements) {
-    return false
+    return;
   }
   
   var hasRelativeTweet = false;
@@ -69,26 +110,19 @@ function removeRelativeTweet(document) {
       element.parentElement.parentElement.parentElement.parentElement.parentElement.style.display = 'none';
     }
   }
-  // if (hasRelativeTweet) {
-  //   const imageOnlyElements = document.getElementsByClassName("css-1dbjc4n r-1awozwy r-1p0dtai r-1777fci r-1d2f490 r-u8s1d r-zchlnj r-ipm5af")
-  //   for (const element of imageOnlyElements) {
-  //     element.parentElement.parentElement.parentElement.parentElement.parentElement.style.display = 'none';
-  //   }
-  // }
+  // TODO: Should remove image only related tweet.
 }
 
 // --- MAIN ---
 
 const main = () => {
   var location = getLocation();
-  if (isDetailPage(location)) {
-    removeRelativeTweet(document);
-  }
+  var domDocument = getDocument();
   observeURLChanged(location, (next) => {
     console.log(`URL changed to ${next.href}`);
     if (isDetailPage(next)) {
       console.log("relative tweets dead.");
-      removeRelativeTweet(document);
+      removeRelativeTweet(domDocument);
     }
   });
 }
