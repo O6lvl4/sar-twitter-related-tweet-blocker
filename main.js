@@ -69,12 +69,12 @@ function removeRelativeTweet(document) {
       element.parentElement.parentElement.parentElement.parentElement.parentElement.style.display = 'none';
     }
   }
-  if (hasRelativeTweet) {
-    const imageOnlyElements = document.getElementsByClassName("css-1dbjc4n r-1awozwy r-1p0dtai r-1777fci r-1d2f490 r-u8s1d r-zchlnj r-ipm5af")
-    for (const element of imageOnlyElements) {
-      element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.style.display = 'none';
-    }
-  }
+  // if (hasRelativeTweet) {
+  //   const imageOnlyElements = document.getElementsByClassName("css-1dbjc4n r-1awozwy r-1p0dtai r-1777fci r-1d2f490 r-u8s1d r-zchlnj r-ipm5af")
+  //   for (const element of imageOnlyElements) {
+  //     element.parentElement.parentElement.parentElement.parentElement.parentElement.style.display = 'none';
+  //   }
+  // }
 }
 
 // --- MAIN ---
