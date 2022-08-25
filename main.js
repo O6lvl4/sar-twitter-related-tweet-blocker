@@ -5,12 +5,10 @@ const getLocation = (path) => {
     return window.location;
   } else {
     // get it to run in node
-    const protocol = "https"
     const _path = path !== undefined ? path : "/";
-    const host = "LOCAL"
     return {
       protocol: "https",
-      host: host,
+      host: "LOCAL",
       pathname: _path,
       href: `${protocol}://${host}${_path}`
     }
