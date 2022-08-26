@@ -52,26 +52,41 @@ const getDocument = () => {
     return document;
   } else {
     // get it to run in node
-    const dummyData = ["First tweet", "Second tweet", "関連ツイート", "Relative first tweet", "Relative second tweet"]
+    const dummyData = [
+      "First tweet",
+      "Second tweet",
+      "関連ツイート",
+      "Relative first tweet",
+      "Relative second tweet"]
     return new DummyDOM(dummyData);
   }
 }
 
 // --- SOLVE ---
 
-const observeURLChanged = (location, listener) => {
+const observeURLChanged = (initialLocation, locationFetcher, listener) => {
+  console.log("observeURLChanged location: ", initialLocation)
   if (typeof MutationObserver !== "undefined") {
-    var previousUrl = "";
+    var previousLocation = undefined;
+    var observing = false;
+    var observingLocation = initialLocation;
     var observer =  new MutationObserver(() => {
-      previousUrl = location.href;
+        if (previousLocation !== undefined) {
+          var currentLocation = locationFetcher();
+          if (currentLocation !== previousLocation) {
+            previousLocation = observingLocation;
+            observingLocation = currentLocation;
+            observing = true;
+          }
+        } else {
+          previousLocation = observingLocation;
+        }
+        if (observing) {
+          listener(locationFetcher(), () => {
+            observing = false;
+          });
+        }
     });
-    var intervalId = undefined;
-    if (intervalId) {
-      clearInterval(intervalId);
-    }
-    intervalId = setInterval(() => {
-      listener(location);
-    }, 1000);
     observer.observe(document, {
       subtree: true,
       childList: true
@@ -93,22 +108,31 @@ const isDetailPage = (location) => {
 
 const removeRelativeTweet = (document) => {
   // Using in related text tweet.
-  const elements = document.getElementsByClassName("css-901oao css-16my406 r-1tl8opc r-bcqeeo r-qvutc0");
+  const targetStylePattern = "css-901oao css-16my406 r-1tl8opc r-bcqeeo r-qvutc0";
+  const elements = document.getElementsByClassName(targetStylePattern);
   if (!elements) {
-    return;
+    return true;
   }
-  
   var hasRelativeTweet = false;
   var idx = -1;
+  var removeCount = 0;
   for (const element of elements) {
     idx++;
     if (element.innerText === "関連ツイート") {
       hasRelativeTweet = true;
     } else if (hasRelativeTweet) {
-      element.parentElement.parentElement.parentElement.parentElement.parentElement.style.display = 'none';
+      removeCount += 1;
+      element.parentElement
+        .parentElement
+        .parentElement
+        .parentElement
+        .parentElement
+        .style.display = 'none';
     }
   }
   // TODO: Should remove image only related tweet.
+  console.log("removeCount > 0: ", removeCount);
+  return removeCount > 0;
 }
 
 // --- MAIN ---
@@ -116,11 +140,11 @@ const removeRelativeTweet = (document) => {
 const main = () => {
   var location = getLocation();
   var domDocument = getDocument();
-  observeURLChanged(location, (next) => {
-    console.log(`URL changed to ${next.href}`);
-    if (isDetailPage(next)) {
-      console.log("relative tweets dead.");
-      removeRelativeTweet(domDocument);
+  observeURLChanged(location.href, () => location.href, (next, removed) => {
+    if (isDetailPage(location)) {
+      if (removeRelativeTweet(domDocument)) {
+        removed();
+      }
     }
   });
 }
