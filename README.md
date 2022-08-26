@@ -3,7 +3,7 @@
 最近 Twitter で導入された関連ツイートを非表示にしたいというモチベーションで作成しました。  
 作者は基本的に PC のブラウザ版で Twitter を使用しているため、今回は ScriptAutoRunner という Chrome 拡張を利用しブラウザで Twitter を開くたびに関連ツイートを非表示にするようにしています。
 
-## 1. ScriptAutoRunner 導入
+## ScriptAutoRunner 導入
 
 ### Chrome
 
@@ -18,7 +18,7 @@
 続いてこの URL にアクセスし ScriptAutoRunner の拡張プラグインを導入します。  
 https://chrome.google.com/webstore/detail/scriptautorunner/gpgjofmpmjjopcogjgdldidobhmjmdbm?hl=ja
 
-## 2. スクリプトのセットアップ
+## スクリプトのセットアップ
 
 拡張プラグインである ScriptAutoRunner をプラグインの一覧から選択しましょう。
 
@@ -70,3 +70,11 @@ https://raw.githubusercontent.com/O6lvl4/sar-twitter-related-tweet-blocker/main/
 
 あとは動作させるために有効化していきたいので、UI 上に見えているプラグを選択します。  
 それによってプラグの色が黒から黄色に変われば有効化された状態になります。
+
+## 動作確認
+
+スクリプトを設定するとこのような見た目になっています。
+
+![](./doc/images/complete-script.png)
+
+これで Twitter を開くと自動的に関連ツイートを非表示にしてくれます。
