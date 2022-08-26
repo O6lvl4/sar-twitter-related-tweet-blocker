@@ -5,12 +5,10 @@ const getLocation = (path) => {
     return window.location;
   } else {
     // get it to run in node
-    const protocol = "https";
-    const host = "LOCAL";
     const _path = path !== undefined ? path : "/";
     return {
-      protocol: protocol,
-      host: host,
+      protocol: "https",
+      host: "LOCAL",
       pathname: _path,
       href: `${protocol}://${host}${_path}`
     }
@@ -67,9 +65,10 @@ const getDocument = () => {
 // --- SOLVE ---
 
 const observeURLChanged = (initialLocation, locationFetcher, listener) => {
+  console.log("observeURLChanged location: ", initialLocation)
   if (typeof MutationObserver !== "undefined") {
     var previousLocation = undefined;
-    var observing = true;
+    var observing = false;
     var observingLocation = initialLocation;
     var observer =  new MutationObserver(() => {
         if (previousLocation !== undefined) {
@@ -96,9 +95,7 @@ const observeURLChanged = (initialLocation, locationFetcher, listener) => {
     // get it to run in node
     console.log("dummy to once observing");
     const dummyPath = "/local_exec/status/2389281184103543863";
-    listener(() => getLocation(dummyPath), () => {
-      console.log("Completed removing related tweets");
-    });
+    listener(getLocation(dummyPath));
   }
 }
 
@@ -147,7 +144,7 @@ const main = () => {
   var location = getLocation();
   var domDocument = getDocument();
   observeURLChanged(location.href, () => location.href, (next, removed) => {
-    if (isDetailPage(next())) {
+    if (isDetailPage(location)) {
       if (removeRelativeTweet(domDocument)) {
         removed();
       }
