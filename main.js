@@ -100,10 +100,11 @@ const observeURLChanged = (initialLocation, locationFetcher, listener) => {
 }
 
 const isDetailPage = (location) => {
-  var pathname = location.pathname;
-  // TODO: Using regex pattern
-  var pathcount = pathname.split("/").length;
-  return pathcount > 2;
+  var pathnames = location.pathname.split("/");
+  if (pathnames > 2) {
+    pathnames.shift()
+  }
+  return pathnames.indexOf("status") === 2;
 }
 
 const removeRelativeTweet = (document) => {
@@ -131,7 +132,9 @@ const removeRelativeTweet = (document) => {
     }
   }
   // TODO: Should remove image only related tweet.
-  console.log("removeCount > 0: ", removeCount);
+  if (removeCount > 0) {
+    console.log("removeCount: ", removeCount);
+  }
   return removeCount > 0;
 }
 
