@@ -81,11 +81,11 @@ const observeURLChanged = (initialLocation, locationFetcher, listener) => {
         } else {
           previousLocation = observingLocation;
         }
-        if (observing) {
+        // if (observing) {
           listener(locationFetcher(), () => {
             observing = false;
           });
-        }
+        // }
     });
     observer.observe(document, {
       subtree: true,
